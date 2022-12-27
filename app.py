@@ -221,12 +221,9 @@ def all_data(route):
     route_df['cumul_dist'] = route_df['distance'].cumsum()  # kolumna z zsumowanymi odległościami od początku trasy
 
     # wczytanie modelu geoidy
-    # model = np.genfromtxt('Model_quasi-geoidy-PL-geoid2021-PL-EVRF2007-NH.txt', skip_header=1)
-
-    link = "http://www.gugik.gov.pl/__data/assets/text_file/0008/236546/Model_quasi-geoidy-PL-geoid2021-PL-EVRF2007-NH.txt"
-    f = requests.get(link)
-    s = StringIO(f.text)
-    model = np.genfromtxt(s, skip_header=1)
+    model1 = np.genfromtxt('x00.txt', skip_header=1)
+    model2 = np.genfromtxt('x01.txt', skip_header=1)
+    model = np.concatenate((model1, model2), axis=0)
 
     # z modelu geoidy utworzenie tablic, których można użyć w funkcji do interpolacji
     x = model[:, 0]
