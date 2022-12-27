@@ -219,23 +219,12 @@ def all_data(route):
 
     route_df['distance'] = dist     # kolumna z odległościami między parami sąsiednich punktów
     route_df['cumul_dist'] = route_df['distance'].cumsum()  # kolumna z zsumowanymi odległościami od początku trasy
-
-    print('here')
-    # wczytanie modelu geoidy
-    link1 = "https://raw.githubusercontent.com/MBaliszewski/sattelite_levelling_app/main/x00.txt"
-    f1 = requests.get(link1)
-    s1 = StringIO(f1.text)
-    model1 = np.genfromtxt(s1, skip_header=1)
            
-    print('here2')
-    link2 = "https://raw.githubusercontent.com/MBaliszewski/sattelite_levelling_app/main/x01.txt"
-    f2 = requests.get(link2)
-    s2 = StringIO(f2.text)
-    model2 = np.genfromtxt(s2, skip_header=1)
+    # wczytanie modelu geoidy
+    model1 = np.genfromtxt('x00.txt', skip_header=1)
+    model2 = np.genfromtxt('x01.txt', skip_header=1)
 
-    print('here3')
     model = np.concatenate((model1, model2), axis=0)
-    print('here4')
 
     # z modelu geoidy utworzenie tablic, których można użyć w funkcji do interpolacji
     x = model[:, 0]
