@@ -154,15 +154,15 @@ def update_output(list_of_contents, list_of_names, list_of_dates):
     if list_of_contents is None:
         children = [parse_contents(None, None)]
         return children, 0
-    elif len(list_of_contents) != 1:
+    elif len(list_of_contents) != 2:
         n_files = len(list_of_contents)
-        return html.H6(f'{n_files} files loaded, but 1 file are required'), 0
+        return html.H6(f'{n_files} files loaded, but 2 file are required'), 0
     else:
         children = [
             parse_contents(n, d) for n, d in
             zip(list_of_names, list_of_dates)]
 
-        pf = all_data(list_of_contents[0])
+        pf = all_data(list_of_contents[0], list_of_contents[1])
         pf = pf.to_json(orient='columns')
         time.sleep(0)
         return children, pf
@@ -178,10 +178,16 @@ def xyz(phi, lam, h):
     return [x, y, z]
 
 
-def all_data(route):
+def all_data(route, gpx):
     # konwersja wczytanego pliku
     content_type, content_string = route.split(',')
     decoded_route = base64.b64decode(content_string)
+
+    content_type_gpx, content_string_gpx = gpx.split(',')
+    decoded_gpx = base64.b64decode(content_string_gpx)
+    decoded_gpx = decoded_gpx.decode('utf-8')
+    decoded_gpx = StringIO(decoded_gpx)
+    model = np.genfromtxt(decoded_gpx, skip_header=1)
 
     # odczyt pliku gpx
     gpx = gpxpy.parse(decoded_route)
@@ -219,14 +225,9 @@ def all_data(route):
 
     route_df['distance'] = dist     # kolumna z odległościami między parami sąsiednich punktów
     route_df['cumul_dist'] = route_df['distance'].cumsum()  # kolumna z zsumowanymi odległościami od początku trasy
-           
-    # wczytanie modelu geoidy
-    model1 = np.genfromtxt('x00.txt', skip_header=1)
-    model2 = np.genfromtxt('x01.txt', skip_header=1)
 
-    model = np.concatenate((model1, model2), axis=0)
-    if len(model) < 962001:
-           return 0
+    # wczytanie modelu geoidy
+    # model = np.genfromtxt('Model_quasi-geoidy-PL-geoid2021-PL-EVRF2007-NH.txt', skip_header=1)
 
     # z modelu geoidy utworzenie tablic, których można użyć w funkcji do interpolacji
     x = model[:, 0]
