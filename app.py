@@ -225,6 +225,8 @@ def all_data(route):
     model2 = np.genfromtxt('x01.txt', skip_header=1)
 
     model = np.concatenate((model1, model2), axis=0)
+    if len(model) < 962001:
+           return 0
 
     # z modelu geoidy utworzenie tablic, których można użyć w funkcji do interpolacji
     x = model[:, 0]
